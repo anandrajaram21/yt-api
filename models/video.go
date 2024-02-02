@@ -8,6 +8,7 @@ import (
 
 type Video struct {
 	gorm.Model             // Adds ID, CreatedAt, UpdatedAt, DeletedAt
+	VideoID      string    `gorm:"size:255;not null;unique"`
 	Title        string    `gorm:"size:255;not null"`
 	Description  string    `gorm:"type:text;not null"`
 	PublishDate  time.Time `gorm:"type:timestamp;index:idx_publish_date"` // Index for sorting by PublishDate
