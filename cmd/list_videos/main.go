@@ -35,9 +35,29 @@ func Handler(request events.APIGatewayV2HTTPRequest) (events.APIGatewayProxyResp
 
 	// Checking for the presence of the pageSize and pageNumber query parameters
 	if pageSize == "" || pageNumber == "" {
+
+		videos, err := database.GetAllVideos()
+		if err != nil {
+			mes := `{ "message": "Failed to list videos" }`
+			return events.APIGatewayProxyResponse{
+				StatusCode: 500,
+				Body:       mes,
+			}, nil
+		}
+
+		// Convert the videos to JSON
+		videosJSON, err := json.Marshal(videos)
+		if err != nil {
+			mes := `{ "message": "Failed to marshal videos to JSON" }`
+			return events.APIGatewayProxyResponse{
+				StatusCode: 500,
+				Body:       mes,
+			}, nil
+		}
+
 		return events.APIGatewayProxyResponse{
-			StatusCode: 400,
-			Body:       "pageSize and pageNumber query parameters are required",
+			StatusCode: 200,
+			Body:       string(videosJSON),
 		}, nil
 	}
 

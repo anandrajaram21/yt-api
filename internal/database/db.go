@@ -51,3 +51,14 @@ func ListVideos(pageSize, pageNumber int) ([]models.Video, error) {
 	}
 	return videos, nil
 }
+
+func GetAllVideos() ([]models.Video, error) {
+	var videos []models.Video
+
+	result := DB.Find(&videos)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return videos, nil
+}
