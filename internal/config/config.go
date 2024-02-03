@@ -11,10 +11,16 @@ type Config struct {
 	RedisURL      string
 	YouTubeAPIKey string
 	DBConfig      DatabaseConfig
+	AWSConfig     AWSConfig
 }
 
 type DatabaseConfig struct {
 	DatabaseURL string
+}
+
+type AWSConfig struct {
+	SQSUrl      string
+	SNSTopicARN string
 }
 
 func LoadConfig() Config {
