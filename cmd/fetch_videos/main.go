@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/anandrajaram21/yt-api/internal/config"
 	"github.com/anandrajaram21/yt-api/internal/messaging"
@@ -21,6 +22,8 @@ type VideoData struct {
 
 func Handler(ctx context.Context) {
 	cfg := config.LoadConfig()
+
+	log.Println("YOUTUBE API KEY", os.Getenv("API_KEY"))
 
 	yt := youtube.NewYouTubeService(cfg.YouTubeAPIKey)
 

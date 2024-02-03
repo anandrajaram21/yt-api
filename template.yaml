@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    Timeout: 5
+
+Resources:
+  FetchVideosFunction:
+    Type: AWS::Serverless::Function
+    Environment:
+      Variables:
+        API_KEY: "random bs"
+    Properties:
+      Handler: cmd/fetch_videos/main
+      Runtime: go1.x
+      CodeUri: ./cmd/fetch_videos/
+
+  SaveVideosFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: cmd/save_videos/main
+      Runtime: go1.x
+      CodeUri: ./cmd/save_videos/
+      Events:
+        VideoQueueEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt VideoQueue.Arn
+            BatchSize: 10
+
+  VideoQueue:
+    Type: AWS::SQS::Queue
+
+Outputs:
+  VideoQueueURL:
+    Description: "URL of the SQS queue for video processing"
+    Value: !Ref VideoQueue
+  VideoQueueARN:
+    Description: "ARN of the SQS queue for video processing"
+    Value: !GetAtt VideoQueue.Arn

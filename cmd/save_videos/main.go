@@ -9,12 +9,10 @@ import (
 	"github.com/anandrajaram21/yt-api/internal/cache"
 	"github.com/anandrajaram21/yt-api/internal/config"
 	"github.com/anandrajaram21/yt-api/internal/database"
-	"github.com/anandrajaram21/yt-api/internal/messaging"
 	"github.com/anandrajaram21/yt-api/internal/models"
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
-
-var ctx = context.Background()
 
 func init() {
 	cfg := config.LoadConfig()
@@ -29,24 +27,10 @@ func init() {
 	database.InitializeDatabase(cfg.DBConfig)
 }
 
-func Handler(ctx context.Context) {
-	cfg := config.LoadConfig()
-
-	// Continuously receive and process messages
-	for {
-		message, err := messaging.ReceiveMessage(cfg.AWSConfig.SQSUrl)
-		if err != nil {
-			log.Printf("Failed to receive messages: %v", err)
-			continue
-		}
-
-		if message == nil {
-			// No message received, continue to check for new messages
-			continue
-		}
-
+func Handler(ctx context.Context, sqsEvent events.SQSEvent) {
+	for _, message := range sqsEvent.Records {
 		var video models.Video
-		err = json.Unmarshal([]byte(*message.Body), &video)
+		err := json.Unmarshal([]byte(message.Body), &video)
 		if err != nil {
 			log.Printf("Error unmarshalling message: %v", err)
 			continue
