@@ -19,3 +19,19 @@ To make an API to fetch latest videos sorted in reverse chronological order of t
 3. AWS Lambda
 4. Postgres
 5. Redis
+6. SST
+
+## Deployed Link
+
+[https://task.volt.place/videos](https://task.volt.place/videos)
+
+## Example Request
+
+![example](image.png)
+
+## How To Run
+
+1. Follow the instructions [here](https://docs.sst.dev/advanced/iam-credentials#loading-from-a-file) to setup AWS credentials locally.
+2. Copy the .env.example file to .env and fill in the required details.
+3. `pnpm install`
+4. `pnpm dev`
