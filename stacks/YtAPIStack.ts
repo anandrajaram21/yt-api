@@ -1,12 +1,13 @@
-import { StackContext, Function, Queue, Api } from "sst/constructs";
+import { StackContext, Function, Queue, Api, Cron } from "sst/constructs";
 
 export function YtAPIStack({ stack }: StackContext) {
   const redisUrl = process.env.REDIS_URL!;
   const ytApiKey = process.env.API_KEY!;
   const dbUrl = process.env.DATABASE_URL!;
+  const customDomain = process.env.CUSTOM_DOMAIN;
 
   const api = new Api(stack, "api", {
-    customDomain: "task.volt.place",
+    customDomain,
     routes: {
       "GET /videos": "cmd/list_videos/main.go",
     },
@@ -28,6 +29,11 @@ export function YtAPIStack({ stack }: StackContext) {
       DATABASE_URL: dbUrl,
       API_KEY: ytApiKey,
     },
+  });
+
+  const cron = new Cron(stack, "cron", {
+    schedule: "rate(1 minute)",
+    job: saveVideos,
   });
 
   stack.addOutputs({
