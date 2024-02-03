@@ -2,10 +2,12 @@ package cache
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"time"
 
-	redis "github.com/redis/go-redis/v9"
+	"github.com/anandrajaram21/yt-api/internal/models"
+	"github.com/redis/go-redis/v9"
 )
 
 var (
@@ -30,14 +32,31 @@ func InitializeCache(redisUrl string) (*redis.Client, error) {
 	return rdb, nil
 }
 
-func GetClient() *redis.Client {
-	return rdb
+// StoreVideo stores a Video object in Redis cache.
+func StoreVideo(video *models.Video) error {
+	videoJSON, err := json.Marshal(video)
+	if err != nil {
+		return err
+	}
+
+	// Use the video ID as the key
+	return rdb.Set(ctx, video.VideoID, videoJSON, 24*time.Hour).Err() // Setting a 24-hour TTL for the cache
 }
 
-func Set(key string, value interface{}, expiration time.Duration) error {
-	return rdb.Set(ctx, key, value, expiration).Err()
-}
+// RetrieveVideo retrieves a Video object from Redis cache by its ID.
+func RetrieveVideo(videoID string) (*models.Video, error) {
+	result, err := rdb.Get(ctx, videoID).Result()
+	if err == redis.Nil {
+		return nil, nil // Cache miss
+	} else if err != nil {
+		return nil, err
+	}
 
-func Get(key string) (string, error) {
-	return rdb.Get(ctx, key).Result()
+	var video models.Video
+	err = json.Unmarshal([]byte(result), &video)
+	if err != nil {
+		return nil, err
+	}
+
+	return &video, nil
 }

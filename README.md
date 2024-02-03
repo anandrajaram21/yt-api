@@ -16,7 +16,6 @@ To make an API to fetch latest videos sorted in reverse chronological order of t
 
 1. Go
 2. YouTube Data API v3
-3. AWS SQS
-4. AWS Lambda
-5. AWS SNS
-6. AWS S3
+3. AWS Lambda
+4. Postgres
+5. Redis

@@ -1,3 +1,7 @@
 .env
 env.json
 .aws-sam
+.sst
+cdk.context.json
+
+node_modules/

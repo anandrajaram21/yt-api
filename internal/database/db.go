@@ -20,19 +20,34 @@ func InitializeDatabase(cfg config.DatabaseConfig) {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	err = DB.AutoMigrate(&models.Video{})
-	if err != nil {
-		log.Fatalf("Failed to migrate database: %v", err)
-	}
+	// err = DB.AutoMigrate(&models.Video{})
+	// if err != nil {
+	// 	log.Fatalf("Failed to migrate database: %v", err)
+	// }
 }
 
-func UpsertVideo(video models.Video) error {
-	result := DB.Clauses(clause.OnConflict{
-		UpdateAll: true, // Updates all fields to new values if conflict occurs
-	}).Create(&video)
-
+// SaveVideo inserts a new video record into the database.
+func SaveVideo(video *models.Video) error {
+	// The clause.OnConflict allows us to define what to do in case of a duplicate entry,
+	// here it's set to do nothing, but it can be set to update the record if needed.
+	result := DB.Clauses(clause.OnConflict{DoNothing: true}).Create(video)
 	if result.Error != nil {
 		return result.Error
 	}
 	return nil
+}
+
+func ListVideos(pageSize, pageNumber int) ([]models.Video, error) {
+	var videos []models.Video
+
+	offset := (pageNumber - 1) * pageSize
+	result := DB.Limit(pageSize).
+		Offset(offset).
+		Order("publish_date desc").
+		Find(&videos)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return videos, nil
 }
