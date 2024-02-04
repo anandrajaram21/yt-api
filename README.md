@@ -42,5 +42,6 @@ Returns the paginated response corresponding to the URL parameters passed
 
 1. Follow the instructions [here](https://docs.sst.dev/advanced/iam-credentials#loading-from-a-file) to setup AWS credentials locally.
 2. Copy the .env.example file to .env and fill in the required details.
+3. Run the db migrations using `go run migrate.go`
 4. `pnpm install`
 5. `pnpm dev`
